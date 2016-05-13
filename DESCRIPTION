@@ -1,0 +1,11 @@
+Package: vfranking
+Type: Package
+Title: Value function based ranking
+Version: 0.0.1
+Date: 2016-05-13
+Author: Krzysztof Ciomek
+Maintainer: Krzysztof Ciomek <k.ciomek@gmail.com>
+URL: https://github.com/kciomek/vfranking/
+Depends: Rglpk (>= 0.5-1), hitandrun (>= 0.5-2)
+Description: Implementation of multiple criteria ranking methods that use additive value function to model preferences.
+License: License
