@@ -31,7 +31,7 @@ sampleParameters <- function(model, numberOfSamples = 1000) {
 
 
 #' @export
-pwi <- function(model, samples) {
+pwi <- function(model, samples, accuracy = 1e-16) {
   stopifnot(nrow(samples) > 0)
   
   nrAlternatives <- nrow(model$perfToModelVariables)
@@ -42,7 +42,7 @@ pwi <- function(model, samples) {
   result <- matrix(data = 0, nrow = nrAlternatives, ncol = nrAlternatives)
   
   for (i in seq_len(nrow(samples))) {
-    ranks <- getRanksFromF(model, samples[i, ])
+    ranks <- getRanksFromF(model, samples[i, ], accuracy)
     
     for (i in seq_len(nrAlternatives)) {
       for (j in seq_len(nrAlternatives)) {
@@ -83,3 +83,28 @@ rai <- function(model, samples) {
   return (result)
 }
 
+#' @export
+cv <- function(model, samples) {
+  stopifnot(nrow(samples) > 0)
+  
+  nrAlternatives <- nrow(model$perfToModelVariables)
+  nrCriteria <- ncol(model$perfToModelVariables)
+  
+  model <- eliminateEpsilon(model)
+  
+  weightIndices <- c()
+  
+  for (j in seq_len(length(model$chPoints))) {
+    if (model$criterionPreferenceDirection[j] == "g") {
+      weightIndices <- c(weightIndices,
+                         model$firstChPointVariableIndex[j] + model$chPoints[j] - 2)
+    } else { # "c"
+      weightIndices <- c(weightIndices,
+                         model$firstChPointVariableIndex[j])
+    }
+  }
+  
+  selectedColumns <- samples[, weightIndices]
+  
+  return (mean(apply(selectedColumns, 2, sd) / colMeans(selectedColumns)))
+}

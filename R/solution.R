@@ -12,13 +12,20 @@ maximizeEpsilon <- function(model) {
   return (extremizeVariable(model$constraints, model$epsilonIndex, TRUE))
 }
 
-isModelConsistent <- function(model) {            
-  ret <- maximizeEpsilon(model)
+isModelConsistent <- function(model) {
+  if (all(model$constraints$lhs[, model$epsilonIndex] == 0)) {
+    # epsilon is not used, but still the model can be feasible
+    ret <- extremizeVariable(model$constraints, model$epsilonIndex - 1, TRUE)
+    
+    return (ret$status == 0)
+  } else {
+    ret <- maximizeEpsilon(model)
   
-  return (ret$status == 0 && ret$optimum >= model$minEpsilon)
+    return (ret$status == 0 && ret$optimum >= model$minEpsilon)
+  }
 }
 
-getRanksFromF <- function(model, values) {
+getRanksFromF <- function(model, values, accuracy = 1e-16) {
   nrVariables <- ncol(model$constraints$lhs)
   nrAlternatives <- nrow(model$perfToModelVariables)
   
@@ -27,7 +34,7 @@ getRanksFromF <- function(model, values) {
   ranks <- sapply(seq_len(nrAlternatives), function(i) {
     rank <- 1
     for (j in seq_len(nrAlternatives)) {
-      if (i != j && comprehensiveValue[j] - comprehensiveValue[i] > 1e-16) {
+      if (i != j && comprehensiveValue[j] - comprehensiveValue[i] > accuracy) {
         rank <- rank + 1
       }
     }

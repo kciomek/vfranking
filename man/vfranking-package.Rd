@@ -12,8 +12,8 @@ Implementation of multiple criteria ranking methods that use additive value func
 \tabular{ll}{
 Package: \tab vfranking\cr
 Type: \tab Package\cr
-Version: \tab 0.0.1\cr
-Date: \tab 2016-05-13\cr
+Version: \tab 0.1.0\cr
+Date: \tab 2016-10-21\cr
 }
 }
 \author{
